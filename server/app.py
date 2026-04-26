@@ -56,13 +56,17 @@ def get_speakers():
 
 @app.route('/speakers/<int:id>')
 def get_speaker(id):
-    speaker = Speaker.query.get(id)
+    speaker = Speaker.query.filter_by(id=id).first()
     if not speaker:
-        return make_response(jsonify({'error': 'Speaker not found'}), 404)
-    return make_response(jsonify({
-        'id': speaker.id,
-        'name': speaker.name
-    }), 200)
+        return make_response(jsonify({"error": "Speaker not found"}), 404)
+    
+    # Flatten the bio_text into the main dictionary
+    speaker_dict = {
+        "id": speaker.id,
+        "name": speaker.name,
+        "bio_text": speaker.bio.bio_text if speaker.bio else None
+    }
+    return make_response(jsonify(speaker_dict), 200)
 
 
 @app.route('/sessions/<int:id>/speakers')
