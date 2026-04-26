@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 from flask_migrate import Migrate
 
 from models import db, Event, Session, Speaker, Bio
@@ -18,27 +18,65 @@ db.init_app(app)
 
 @app.route('/events')
 def get_events():
-    pass
+    events = []
+    for event in Event.query.all():
+        events.append({
+            'id': event.id,
+            'name': event.name,
+            'location': event.location
+        })
+    return make_response(jsonify(events), 200)
 
 
 @app.route('/events/<int:id>/sessions')
 def get_event_sessions(id):
-    pass
+    event = Event.query.get(id)
+    if not event:
+        return make_response(jsonify({'error': 'Event not found'}), 404)
+    sessions = []
+    for session in event.sessions:
+        sessions.append({
+            'id': session.id,
+            'title': session.title,
+            'start_time': session.start_time
+        })
+    return make_response(jsonify(sessions), 200)
 
 
 @app.route('/speakers')
 def get_speakers():
-    pass
+    speakers = []
+    for speaker in Speaker.query.all():
+        speakers.append({
+            'id': speaker.id,
+            'name': speaker.name
+        })
+    return make_response(jsonify(speakers), 200)
 
 
 @app.route('/speakers/<int:id>')
 def get_speaker(id):
-    pass
+    speaker = Speaker.query.get(id)
+    if not speaker:
+        return make_response(jsonify({'error': 'Speaker not found'}), 404)
+    return make_response(jsonify({
+        'id': speaker.id,
+        'name': speaker.name
+    }), 200)
 
 
 @app.route('/sessions/<int:id>/speakers')
 def get_session_speakers(id):
-    pass
+    session = Session.query.get(id)
+    if not session:
+        return make_response(jsonify({'error': 'Session not found'}), 404)
+    speakers = []
+    for speaker in session.speakers:
+        speakers.append({
+            'id': speaker.id,
+            'name': speaker.name
+        })
+    return make_response(jsonify(speakers), 200)
 
 
 if __name__ == '__main__':
