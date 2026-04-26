@@ -64,7 +64,7 @@ def get_speaker(id):
     speaker_dict = {
         "id": speaker.id,
         "name": speaker.name,
-        "bio_text": speaker.bio.bio_text if speaker.bio else None
+        "bio_text": speaker.bio.bio_text if speaker.bio else "No bio available"
     }
     return make_response(jsonify(speaker_dict), 200)
 
